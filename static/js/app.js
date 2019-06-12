@@ -17,9 +17,7 @@ function buildMetadata(sample) {
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
     Object.entries(sample).forEach(function ([key, value]) {
-      Panel.append("p");
-      row.text(`${key}: ${value}`);
-
+     Panel.append("p").text(`${key}: ${value}`);
     });
   }
   )
