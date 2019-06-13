@@ -5,7 +5,7 @@ function buildMetadata(sample) {
   // Use `d3.json` to fetch the metadata for a sample
   // Use d3 to select the panel with id of `#sample-metadata`
   
-  d3.json(`/metadata/${sample}`).then(function (sample) {
+  d3.json(`/metadata/${sample}`).then(function (data) {
     // Use d3 to select the panel with id of `#sample-metadata`
     var Panel = d3.select("#sample-metadata");
 
@@ -16,8 +16,9 @@ function buildMetadata(sample) {
     // Use `Object.entries` to add each key and value pair to the panel
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
-    Object.entries(sample).forEach(function ([key, value]) {
-     Panel.append("p").text(`${key}: ${value}`);
+    Object.entries(data).forEach(function ([key, value]) {
+      Panel.append("p").text(`${key} : ${value}`);
+
     });
   }
   )
@@ -33,22 +34,30 @@ function buildCharts(sample) {
     const sample_values = data.sample_values;
     const otu_labels = data.otu_labels;
 
-    var bubble = {
-      margin: { t: 0 }, xaxis: { title: "Belly Button Sample" }, hovermode: "closest"
+    var layout = {
+      margin: { t: 0 },
+      xaxis: { title: "Belly Button Sample" },
+      hovermode: "closest"
     };
-    var bubbleData = {
-      x: otu_ids, y: sample_values, text: otu_labels, mode: "markers", marker: {
+    var bubble = [{
+      x: otu_ids,
+      y: sample_values,
+      text: otu_labels,
+      mode: "markers",
+        marker: {
         size: sample_values,
-        color: otu_ids, colorscale: "Pinic"
+        color: otu_ids,
+        colorscale: "Picnic"
       }
-    };
+      }
+    ];
+    Plotly.plot("bubble", data, layout);
 
-
-    Plotly.plot(bubble, bubbleData, layout);
+    
 
     // @TODO: Build a Pie Chart
-    d3.json(url).then(function (data) {
-      var data = [{
+    d3.json(`/samples/${sample}`).then(function (data) {
+      var pieData = [{
               values: data.sample_values.slice(0, 10),
               labels: data.otu_ids.slice(0, 10),
               hovertext: data.otu_labels.slice(0, 10),
@@ -57,14 +66,15 @@ function buildCharts(sample) {
             var layout = {
               showlegend: true,
             };
-            Plotly.newPlot('pie', data, layout);
+
+           
+            Plotly.newPlot('pie', pieData, layout);
       
           });
+          
 
     });
-  };
-
-
+  
 
 function init() {
   // Grab a reference to the dropdown select element
@@ -94,3 +104,4 @@ function optionChanged(newSample) {
 
 // Initialize the dashboard
 init();
+}
